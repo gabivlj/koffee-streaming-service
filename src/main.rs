@@ -31,14 +31,12 @@ mod file_handling;
 // #[warn(dead_code)]
 fn validate_token(s: &str) -> Option<u64> {
     let footer = "";
-    let as_key = ring::signature::Ed25519KeyPair::from_pkcs8(
-        "some_random_key_that_we'll_get_from_an_env".as_bytes(),
-    )
-    .expect("Failed to parse keypair");
+    // Get the paseto public key (must be the same as the one that the Authorization server uses)
+    let as_key = dotenv::var("PASETO_PUBLIC_KEY").expect("Failed to parse keypair");
     let verified = paseto::validate_public_token(
         &s,
         Some(footer),
-        &paseto::tokens::PasetoPublicKey::ED25519KeyPair(as_key),
+        &paseto::tokens::PasetoPublicKey::ED25519PublicKey(as_key.into_bytes()),
     );
     let val = match verified {
         Ok(value) => value,
