@@ -6,15 +6,12 @@ use chrono::Duration;
 use futures::{StreamExt, TryStreamExt};
 use http::StatusCode;
 use serde_json::json;
-use std::env;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 
 #[cfg(feature = "v2")]
 use ring::signature::Ed25519KeyPair;
-
-use ring::signature::{self, KeyPair};
 
 // use ring::ec::curve25519::ed25519::signing::Ed25519KeyPair;
 
@@ -30,13 +27,6 @@ use std::process::Command;
 extern crate paseto;
 
 mod file_handling;
-
-// use {
-//   chrono::prelude::*,
-//   ring::rand::SystemRandom,
-//   ring::signature::Ed25519KeyPair,
-//   serde_json::json,
-// };
 
 // #[warn(dead_code)]
 fn validate_token(s: &str) -> Option<u64> {
@@ -74,7 +64,7 @@ fn generate_token(path: &str, duration: f64) -> Result<String, &str> {
     /*
          FOR FUTURE REFERENCE IF WE WANNA CREATE A NEW KEY
           let rng = ring::rand::SystemRandom::new();
-          let pkcs8_bytes = signature::Ed25519KeyPair::generate_token(&rng).unwrap();
+          let pkcs8_bytes = signature::Ed25519KeyPair::generate_pkc8(&rng).unwrap();
           let pkcs8_bytes_more: &[u8] = pkcs8_bytes.as_ref();
     */
 
@@ -174,9 +164,6 @@ async fn post_mp3(mut payload: Multipart) -> Result<HttpResponse, Error> {
 }
 
 async fn get_hls_file(req: HttpRequest) -> HttpResponse {
-    // req.headers()
-    println!("HITTED");
-    fs::create_dir_all("assets/media");
     let (path, m_id): (PathBuf, PathBuf) = (
         req.match_info().query("filename").parse().unwrap(),
         req.match_info().query("m_id").parse().unwrap(),
