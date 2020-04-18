@@ -1,0 +1,17 @@
+[package]
+name = "streaming"
+version = "0.1.0"
+authors = ["gabivlj <gabitriqui@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "2.0"
+actix-rt = "1.0"
+actix-files = "^0.2.1"
+actix-cors = "^0.2.0"
+actix-multipart = "0.2.0"
+futures = "0.3.1"
+rand="0.6.0"
+paseto = "^1.0.7"
+ring = "0.16.11"
+json = "0.2.1"
