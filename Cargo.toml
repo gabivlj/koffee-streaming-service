@@ -9,6 +9,7 @@ RUST_BACKTRACE=1
 actix-web = "2.0"
 actix-rt = "1.0"
 actix-files = "^0.2.1"
+actix-service = "1.0.0"
 actix-cors = "^0.2.0"
 actix-multipart = "0.2.0"
 futures = "0.3.1"

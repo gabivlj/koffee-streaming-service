@@ -44,7 +44,6 @@ fn validate_token(s: &str) -> Option<u64> {
             return None;
         }
     };
-    println!("{:?}", val);
     return match val.get("id") {
         // I really trust where this token is comming from.
         Some(value) => Some(value.as_str().unwrap().parse().unwrap()),
@@ -90,7 +89,26 @@ fn generate_token(path: &str, duration: f64) -> Result<String, &str> {
     }
 }
 
-async fn post_mp3(mut payload: Multipart) -> Result<HttpResponse, Error> {
+async fn post_mp3(req: HttpRequest, mut payload: Multipart) -> Result<HttpResponse, Error> {
+    let auth = match req.headers().get("Authorization") {
+        Some(value) => value.to_str(),
+        None => {
+            return Ok(HttpResponse::build(StatusCode::UNAUTHORIZED)
+                .body("Unauthorized")
+                .into_body())
+        }
+    };
+    if let Err(_) = auth {
+        return Ok(HttpResponse::build(StatusCode::UNAUTHORIZED)
+            .body("Unauthorized")
+            .into_body());
+    };
+    let auth = auth.unwrap();
+    if let None = validate_token(auth) {
+        return Ok(HttpResponse::build(StatusCode::UNAUTHORIZED)
+            .body("Unauthorized")
+            .into_body());
+    }
     let mut filepathend = String::from("");
     let random_id = rand::thread_rng()
         .sample_iter(&Alphanumeric)
@@ -214,17 +232,20 @@ fn index() -> HttpResponse {
     HttpResponse::Ok().body(html)
 }
 
+use actix_service::Service;
+use futures::future::FutureExt;
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // validate_token("v2.public.eyJlbWFpbCI6ImV4YW1wbGVAZ21haWwuY29tIiwiZXhwIjoiMjAyMC0wNC0xOVQyMzoxMzozNCswMjowMCIsImlkIjoiMiJ982M6Qq3QaieYH0QUp2FqoODmdPbAzbNh8CaXvpU8ZPd783tX3R3DobSR3oyNFnAC4cJX3E_p9P0pB7Cx_mdbAA").unwrap();
     dotenv::dotenv().unwrap();
+    // Print a token to see that it works
     println!("{}", generate_token("xd", 39.0).unwrap());
     HttpServer::new(|| {
         App::new()
             .wrap(Cors::new().finish())
             .route("/media/{m_id}/{filename}", web::get().to(get_hls_file))
-            .route("/", web::post().to(post_mp3))
             .route("/", web::get().to(index))
+            .route("/", web::post().to(post_mp3))
     })
     .bind("0.0.0.0:8088")?
     .run()
