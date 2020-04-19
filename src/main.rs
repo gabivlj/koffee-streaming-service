@@ -40,7 +40,7 @@ fn validate_token(s: &str) -> Option<u64> {
     );
     let val = match verified {
         Ok(value) => value,
-        Err(e) => {
+        Err(_) => {
             return None;
         }
     };
@@ -216,7 +216,7 @@ fn index() -> HttpResponse {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    validate_token("v2.public.eyJlbWFpbCI6ImV4YW1wbGVAZ21haWwuY29tIiwiZXhwIjoiMjAyMC0wNC0xOVQyMzoxMzozNCswMjowMCIsImlkIjoiMiJ982M6Qq3QaieYH0QUp2FqoODmdPbAzbNh8CaXvpU8ZPd783tX3R3DobSR3oyNFnAC4cJX3E_p9P0pB7Cx_mdbAA").unwrap();
+    // validate_token("v2.public.eyJlbWFpbCI6ImV4YW1wbGVAZ21haWwuY29tIiwiZXhwIjoiMjAyMC0wNC0xOVQyMzoxMzozNCswMjowMCIsImlkIjoiMiJ982M6Qq3QaieYH0QUp2FqoODmdPbAzbNh8CaXvpU8ZPd783tX3R3DobSR3oyNFnAC4cJX3E_p9P0pB7Cx_mdbAA").unwrap();
     dotenv::dotenv().unwrap();
     println!("{}", generate_token("xd", 39.0).unwrap());
     HttpServer::new(|| {
