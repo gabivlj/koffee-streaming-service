@@ -20,7 +20,6 @@ pub fn get_duration_from_hls(filename: &str) -> f64 {
     if let Ok(lines) = read_lines(filename) {
         for line in lines {
             if let Ok(s) = line {
-                println!("{}", s);
                 match getting_duration_sec {
                     true => {
                         if sum % 2 == 0 {
